@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <meta>
+        <fpsCap>60</fpsCap>
+        <screen>
+            <x>1280</x>
+            <y>720</y>
+        </screen>
+        <scaleFactor>
+            <player>1.75</player>
+            <MOT>2</MOT>
+            <energy>1.5</energy>
+            <slider>0.1</slider>
+            <button>5</button>
+        </scaleFactor>
+        <delayBetweenMoves>0</delayBetweenMoves>
+    </meta>
+
+    <gameData>
+        <sliderDecay>0.15</sliderDecay>
+        <pSpeed>230</pSpeed>
+        <baseMOTSpeed>150</MOTSpeed>
+        <baseMOTdelay>1</MOTdelay>
+
+        <diffIncrease>2.5</diffINcrease> 
+        <maxMOTSpeed>750</maxMOTSpeed>
+        <minDelay>0.075</minDelay>
+        <MOTbeforeTime>1.5</MOTbeforeTime> 
+
+        <enemyZone>250</enemyZone>
+    </gameData>
+
+    <assets>
+        <player>../assets/player.png</player>
+        <energy>../assets/energy.png</energy>
+        <MOT>../assets/MOT.png</MOT>
+        <MOTbefore>../assets/MOT_before.png</MOTbefore>
+        <button>../assets/button.png</button>
+        
+        <slider>
+            <fill>../assets/sliderFill.png</fill>
+            <border>../assets/sliderBorder.png</border>
+        </slider>
+    </assets>
+</data>
