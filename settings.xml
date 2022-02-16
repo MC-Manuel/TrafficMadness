@@ -23,7 +23,7 @@
         <baseMOTdelay>1</MOTdelay>
 
         <diffIncrease>2.5</diffINcrease> 
-        <maxMOTSpeed>750</maxMOTSpeed>
+        <maxMOTSpeed>650</maxMOTSpeed>
         <minDelay>0.075</minDelay>
         <MOTbeforeTime>1.5</MOTbeforeTime> 
 
