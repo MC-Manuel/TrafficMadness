@@ -30,27 +30,33 @@ int main()
 
     State gameState = State::Home;
 
-    sf::Texture t;
-    t.loadFromFile("../assets/preGameCover.png");
-    sf::Sprite cover;
-    cover.setTexture(t);
+    sf::Texture tB;
+    tB.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("background")->value());
+    sf::Sprite cover(tB);
+
+    sf::Texture tI;
+    tI.loadFromFile("../assets/MENU/HomeLogo.png");
+    sf::Sprite logo(tI);
+    logo.setScale(0.5, 0.5);
+    logo.setPosition(500, 200);
 
     sf::Text titel;
     sf::Font f;
-    f.loadFromFile("../assets/font.ttf");
+    f.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("titelFont")->value());
     titel.setFont(f);
     titel.setString("Traffic Madness");
-    titel.setCharacterSize(50);
+    titel.setCharacterSize(75);
     titel.setOrigin(titel.getGlobalBounds().width / 2, titel.getGlobalBounds().height / 2);
     titel.setPosition(window.getSize().x / 2, window.getSize().y * 0.1);
 
-    Button *buttonPlayer = new Button(sf::Vector2f(200, 200), "Player");
-    Button *buttonAINE = new Button(sf::Vector2f(400, 200), "AI (no Enemy)");
-    Button *buttonAIE = new Button(sf::Vector2f(600, 200), "Ai (with Enemy)");
+    Button *buttonPlayer = new Button(sf::Vector2f(150, 200), "Play", true, 40);
+    Button *buttonAINE = new Button(sf::Vector2f(150, 375), "Train Simple", true, 30);
+    Button *buttonAIE = new Button(sf::Vector2f(150, 550), "Train Complex", true, 30);
 
-    Button *inQTable = new Button(sf::Vector2f(500, 300), "Input\nQTable");
-    Button *outQTable = new Button(sf::Vector2f(500, 300), "Output\nQTable");
-    Button *goOn = new Button(sf::Vector2f(500, 500), "Continue");
+    Button *inQTable = new Button(sf::Vector2f(500, 300), "Import\nQTable", false, 35);
+    Button *outQTable = new Button(sf::Vector2f(500, 300), "Export\nQTable", false, 35);
+    Button *goHome = new Button(sf::Vector2f(50, 600), "Home", false, 40, BType::small);
+    Button *goOn = new Button(sf::Vector2f(500, 500), "Continue", false, 40);
 
     Agent *agent = nullptr;
 
@@ -79,6 +85,15 @@ int main()
                             afterGame = true;
                             // convet QTable to string for Clipboard
                             agent->getQTable(bufferQTable);
+
+                            outQTable->enabled = true;
+                            goOn->enabled = true;
+                        }
+                        else
+                        {
+                            buttonPlayer->enabled = true;
+                            buttonAIE->enabled = true;
+                            buttonAINE->enabled = true;
                         }
                         delete (game);
                         delete (agent);
@@ -97,11 +112,11 @@ int main()
                 {
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
                     {
-                        agent->epsilon = agent->epsilon + agent->colDropoff <= 1 ? agent->epsilon + agent->colDropoff : 1;
+                        agent->epsilon = agent->epsilon + 0.01f <= 1 ? agent->epsilon + 0.01f : 1;
                     }
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
                     {
-                        agent->epsilon = agent->epsilon - agent->colDropoff >= 0 ? agent->epsilon - agent->colDropoff : 0;
+                        agent->epsilon = agent->epsilon - 0.01f >= 0 ? agent->epsilon - 0.01f : 0;
                     }
                 }
             }
@@ -127,12 +142,19 @@ int main()
 
                     if (gameState != State::Home)
                     {
+                        buttonPlayer->enabled = false;
+                        buttonAIE->enabled = false;
+                        buttonAINE->enabled = false;
+
                         if (gameState == State::User)
                         {
-                            game = new Game(&window);
+                            game = new Game(&window, gameState);
                         }
                         else
                         {
+                            inQTable->enabled = true;
+                            goHome->enabled = true;
+                            goOn->enabled = true;
                             preGame = true;
                         }
                     }
@@ -144,6 +166,13 @@ int main()
                         sf::String str = sf::Clipboard::getString();
                         std::string bufferQTable = str.toAnsiString();
                         agent->setQTable(bufferQTable);
+                    }
+                    if (goHome->isOnButton((sf::Vector2f)sf::Mouse::getPosition(window)))
+                    {
+                        inQTable->enabled = false;
+                        goHome->enabled = false;
+                        goOn->enabled = false;
+                        preGame = false;
                     }
                 }
                 if (afterGame)
@@ -158,9 +187,22 @@ int main()
                     if (goOn->isOnButton((sf::Vector2f)sf::Mouse::getPosition(window)))
                     {
                         if (preGame)
-                            game = new Game(&window);
-                        preGame = false;
-                        afterGame = false;
+                        {
+                            game = new Game(&window, gameState);
+                            preGame = false;
+                            inQTable->enabled = false;
+                            goHome->enabled = false;
+                            goOn->enabled = false;
+                        }
+                        if (afterGame)
+                        {
+                            afterGame = false;
+                            outQTable->enabled = false;
+                            goOn->enabled = false;
+                            buttonPlayer->enabled = true;
+                            buttonAIE->enabled = true;
+                            buttonAINE->enabled = true;
+                        }
                     }
                 }
             }
@@ -169,15 +211,16 @@ int main()
         // GAME UPDATE
         if (game != nullptr)
         {
-            if (gameState != State::User)
+            if (gameState != State::User && gameState != State::Home)
             {
                 if (agent->restart)
                 {
                     delete (game);
-                    game = new Game(&window);
+                    game = new Game(&window, gameState);
                     agent->gen++;
-                    agent->epsilon -= agent->epsilon / 100 * agent->genDropoff;
+                    agent->epsilon *= pow(agent->genDropoff, game->getPlayerAmount());
                     agent->restart = false;
+                    agent->energyCollected = 0;
                 }
             }
 
@@ -185,9 +228,12 @@ int main()
             {
                 if (gameState == State::User)
                 {
+                    gameState = State::Home;
+                    buttonPlayer->enabled = true;
+                    buttonAIE->enabled = true;
+                    buttonAINE->enabled = true;
                     delete (game);
                     game = nullptr;
-                    std::cout << "oki";
                 }
                 else
                 {
@@ -200,15 +246,20 @@ int main()
         window.clear(sf::Color::White);
         if (game != nullptr)
         {
+            window.draw(game->background);
+
             if (indicators && gameState != State::User)
             {
                 window.draw(agent->overviewT);
-                for (sf::RectangleShape rect : agent->statesVisuall)
+                if (game->getPlayerAmount() == 1)
                 {
-                    window.draw(rect);
+                    for (sf::RectangleShape rect : agent->statesVisuall)
+                    {
+                        window.draw(rect);
+                    }
+                    if (gameState == State::AI_yesEnemy)
+                        window.draw(agent->theZone);
                 }
-                if (gameState == State::AI_yesEnemy)
-                    window.draw(agent->theZone);
             }
 
             game->draw(&window);
@@ -219,6 +270,7 @@ int main()
             if (preGame)
             {
                 inQTable->show(&window);
+                goHome->show(&window);
                 goOn->show(&window);
             }
             else if (afterGame)
@@ -232,6 +284,7 @@ int main()
                 buttonAINE->show(&window);
                 buttonAIE->show(&window);
                 window.draw(titel);
+                window.draw(logo);
             }
         }
 

@@ -3,12 +3,21 @@
 
 #include <SFML/Graphics.hpp>
 
+enum BType
+{
+    small,
+    medium,
+    large
+};
+
 class Button
 {
 public:
-    Button(sf::Vector2f position, char textOnButton[]);
+    Button(sf::Vector2f position, char textOnButton[], bool initState, int charSize = 25, BType type = BType::medium);
     bool isOnButton(sf::Vector2f point);
     void show(sf::RenderWindow *window);
+
+    bool enabled = true;
 
     sf::Texture texture;
     sf::Sprite sprite;

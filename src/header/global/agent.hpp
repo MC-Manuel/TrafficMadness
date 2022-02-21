@@ -33,12 +33,12 @@ public:
     std::vector<std::vector<float>> QTable;
 
     int gen = 0;
-    float genDropoff = 30; // %
-    float colDropoff = 0.01f;
+    float genDropoff = 0.995;
     float epsilon = 1.0f; // likelyhood of explore
     float discountFactor = 0.9f;
     float alpha = 0.15f;
-
+    int maxEnergy = 10; // so the agent won't go on forever
+    int energyCollected = 0;
     // ----------------------
 
     bool restart = false;

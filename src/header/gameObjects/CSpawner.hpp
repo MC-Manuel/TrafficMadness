@@ -20,6 +20,7 @@ class Spawner
 {
 public:
     Spawner();
+    ~Spawner();
 
     bool addMOT(); // could give id, but for now this function chooses randomly
     float getDelay();

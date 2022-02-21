@@ -9,6 +9,13 @@ Spawner::Spawner()
     this->delay = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("baseMOTdelay")->value());
     this->MOTSpeed = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("baseMOTSpeed")->value());
 }
+Spawner::~Spawner()
+{
+    for (auto i : this->listMOT)
+    {
+        delete (i);
+    }
+}
 
 bool Spawner::addMOT()
 {

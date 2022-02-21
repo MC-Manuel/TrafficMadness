@@ -21,12 +21,14 @@ enum State
 class Game
 {
 public:
-    Game(sf::RenderWindow *window);
+    Game(sf::RenderWindow *window, State state);
     ~Game();
 
     bool update(sf::RenderWindow *window, State state, Agent *agent = NULL);
-
     void draw(sf::RenderWindow *window);
+    int getPlayerAmount();
+
+    sf::Sprite background;
 
 private:
     // Time
@@ -37,11 +39,13 @@ private:
     sf::Font font;
     sf::Text fps;
     sf::Text score;
-    // GAme Objects
-    Player *player;
+    // Game Objects
+    std::vector<Player *> players;
     Energy *recharger;
     Slider *energyBar;
     Spawner *spawner;
+
+    sf::Texture t;
 };
 
 #endif

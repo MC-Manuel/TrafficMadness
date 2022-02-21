@@ -22,14 +22,22 @@ MOT::MOT(sf::Vector2f startP, sf::Vector2f multP, float speed)
                                    ? sf::Vector2f(this->spriteE.getGlobalBounds().width, 0)
                                    : (this->dirct.y == -1
                                           ? sf::Vector2f(0, this->spriteE.getGlobalBounds().height)
-                                          : sf::Vector2f(0, 0)))); // exections bottom and right
+                                          : sf::Vector2f(0, 0)))); // exceptions bottom and right
+}
+
+MOT::~MOT()
+{
 }
 
 void MOT::waiting()
 {
     if (this->timer->getElapsedTime().asSeconds() >= std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("MOTbeforeTime")->value()))
     {
-        this->tM.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("MOT")->value()); // all the path also store in xml
+        char *options[] = {"truck",
+                           "car",
+                           "bus",
+                           "bycl"};
+        this->tM.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("MOTS")->first_node(options[rand() % 4])->value()); // all the path also store in xml
         this->spriteM.setTexture(this->tM);
         this->spriteM.setPosition(this->pos);
 
@@ -40,10 +48,6 @@ void MOT::waiting()
         this->wait = false;
         delete (this->timer);
     }
-}
-
-MOT::~MOT()
-{
 }
 
 sf::Vector2f MOT::getPos()

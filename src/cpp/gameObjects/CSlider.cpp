@@ -3,8 +3,9 @@
 #include "../../header/global/SInputs.hpp"
 
 #include <iostream>
+#include <math.h>
 
-Slider::Slider(sf::Vector2f mtBorder, float minVal, float maxVal, float initVal)
+Slider::Slider(float minVal, float maxVal, float initVal)
 {
     this->min = minVal;
     this->max = maxVal;
@@ -12,19 +13,26 @@ Slider::Slider(sf::Vector2f mtBorder, float minVal, float maxVal, float initVal)
 
     this->tBorder.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("slider")->first_node("border")->value());
     this->sBorder.setTexture(this->tBorder);
-    this->sBorder.setOrigin(this->sBorder.getLocalBounds().width / 2, 0);
-    this->sBorder.setPosition(mtBorder);
     this->sBorder.setScale(sf::Vector2f(
         std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value()),
         std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value())));
 
+    this->sBorder.setOrigin(this->sBorder.getLocalBounds().width / 2, this->sBorder.getLocalBounds().height / 2);
+    this->sBorder.setPosition(
+        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value()) / 2,
+        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value()) * 0.035);
+
     this->tFill.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("slider")->first_node("fill")->value());
     this->sFill.setTexture(this->tFill);
-    this->sFill.setPosition(sf::Vector2f(mtBorder.x - (this->sBorder.getLocalBounds().width / 2 * std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value())), mtBorder.y));
+    this->rectWidth = this->sFill.getTextureRect().width;
     this->sFill.setScale(
         sf::Vector2f(
-            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value()),
-            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value())));
+            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value()) * 0.975,
+            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value()) * 0.975));
+    this->sFill.setOrigin(0, this->sFill.getLocalBounds().height / 2);
+    this->sFill.setPosition(
+        this->sBorder.getPosition().x - (this->sBorder.getGlobalBounds().width / 2) * 0.975,
+        this->sBorder.getPosition().y);
 }
 
 float Slider::getValue()
@@ -47,8 +55,10 @@ bool Slider::vary(float step)
 
 void Slider::update()
 {
-    this->sFill.setScale(
-        sf::Vector2f(
-            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value()) / this->max * this->val,
-            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("slider")->value())));
+    this->sFill.setTextureRect(
+        sf::IntRect(
+            0,
+            0,
+            (int)(this->rectWidth * (((100.0f / this->max) * this->val) / 100.0f)),
+            this->sFill.getTextureRect().height));
 }

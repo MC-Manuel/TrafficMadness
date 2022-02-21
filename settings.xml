@@ -7,39 +7,70 @@
             <y>720</y>
         </screen>
         <scaleFactor>
-            <player>1.75</player>
-            <MOT>2</MOT>
-            <energy>1.5</energy>
+            <player>0.052</player>
+            <MOT>0.03</MOT>
+            <energy>0.05</energy>
             <slider>0.1</slider>
-            <button>5</button>
+            <button>0.135</button>
         </scaleFactor>
         <delayBetweenMoves>0</delayBetweenMoves>
     </meta>
 
+    <agent>
+        <reward>
+            <survival>-1</survival>
+            <weakCloser>2</weakCloser>
+            <strongCloser>5</strongCloser>
+            <notCloser>-4</notCloser>
+            <collected>200</collected>
+
+            <closerMOT>-8</closerMOT>
+            <furtherMOT>4</furtherMOT>
+            <collided>-200</collided>
+        </reward>
+
+        <learners>5</learners>
+        <enemyZone>200</enemyZone>
+        <initEpsilon>1</initEpsilon>
+    </agent>
+
     <gameData>
-        <sliderDecay>0.15</sliderDecay>
-        <pSpeed>230</pSpeed>
-        <baseMOTSpeed>150</MOTSpeed>
-        <baseMOTdelay>1</MOTdelay>
+        <sliderDecay>0.175</sliderDecay>
+        <pSpeed>250</pSpeed>
+        <baseMOTSpeed>200</MOTSpeed>
+        <baseMOTdelay>0.95</MOTdelay>
 
-        <diffIncrease>2.5</diffINcrease> 
-        <maxMOTSpeed>650</maxMOTSpeed>
-        <minDelay>0.075</minDelay>
-        <MOTbeforeTime>1.5</MOTbeforeTime> 
+        <diffIncrease>1.5</diffINcrease> 
+        <maxMOTSpeed>375</maxMOTSpeed>
+        <minDelay>0.04</minDelay>
+        <MOTbeforeTime>1.25</MOTbeforeTime> 
 
-        <enemyZone>250</enemyZone>
+        
     </gameData>
 
     <assets>
-        <player>../assets/player.png</player>
-        <energy>../assets/energy.png</energy>
-        <MOT>../assets/MOT.png</MOT>
-        <MOTbefore>../assets/MOT_before.png</MOTbefore>
-        <button>../assets/button.png</button>
+        <background>../assets/MENU/background.png</background>
+        <gameBack>../assets/GAME/gameBackground.png</gameBack>
+        <player>
+            <src>../assets/GAME/player.png</src>
+            <width>478</width>
+        </player>
+        <energy>../assets/GAME/energy.png</energy>
+        <MOTS>
+            <truck>../assets/GAME/MOTS/truck.png</truck>
+            <car>../assets/GAME/MOTS/car.png</car>
+            <bus>../assets/GAME/MOTS/truck.png</bus>
+            <bycl>../assets/GAME/MOTS/bike.png</bycl>
+        </MOTS>
+        <MOTbefore>../assets/GAME/MOTS/pre.png</MOTbefore>
+        <button>../assets/MENU/button.png</button>
         
         <slider>
-            <fill>../assets/sliderFill.png</fill>
-            <border>../assets/sliderBorder.png</border>
+            <fill>../assets/GAME/sliderFill.png</fill>
+            <border>../assets/GAME/sliderBorder.png</border>
         </slider>
+        <titelFont>../assets/fonts/wheaton_capitals.otf</titelFont>
+        <buttonFont>../assets/fonts/rimouski_sb.otf</buttonFont>
+        <infoFont>../assets/fonts/arial.ttf</infoFont>
     </assets>
 </data>

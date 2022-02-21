@@ -28,13 +28,15 @@ Agent::Agent(int states)
     this->theZone.setFillColor(sf::Color(255, 99, 92, 100));
     this->theZone.setOutlineColor(sf::Color(163, 7, 0));
     this->theZone.setOutlineThickness(2.5F);
-    this->theZone.setSize(sf::Vector2f(std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("enemyZone")->value()) * 2, std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("enemyZone")->value()) * 2));
+    this->theZone.setSize(sf::Vector2f(std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("enemyZone")->value()) * 2, std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("enemyZone")->value()) * 2));
     this->theZone.setOrigin(this->theZone.getGlobalBounds().width / 2, this->theZone.getGlobalBounds().height / 2);
 
-    this->font.loadFromFile("../assets/font.ttf");
+    this->font.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("infoFont")->value());
     this->overviewT.setFont(font);
     this->overviewT.setCharacterSize(20);
     this->overviewT.setFillColor(sf::Color::Red);
+
+    this->epsilon = std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("initEpsilon")->value());
 }
 
 sf::Vector2f Agent::getAction(int id)
@@ -189,50 +191,41 @@ bool Agent::setQTable(std::string buffer)
 
 int Agent::getReward(int action, Energy *goal, Player *player)
 {
-    int surviveR = -1;
-    int closerOneDimR = 4;
-    int diagonalR = 8;
-    int furtherR = -4;
-    int collectedR = 200;
+    int survival = std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("survival")->value());
 
     // is on energy ( 100 points)
     if (goal->inRange(player))
     {
-        return collectedR;
+        return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("collected")->value()) + survival;
     }
 
-    // got closer to energy
-    float oldDis = abs(this->oldPos.x - goal->getPos().x) + abs(this->oldPos.y - goal->getPos().y);
-    float newDis = abs(player->getPosition().x - goal->getPos().x) + abs(player->getPosition().y - goal->getPos().y);
-    bool diagonal =
-        abs(player->getPosition().x - goal->getPos().x) < abs(this->oldPos.x - goal->getPos().x) &&
-        abs(player->getPosition().y - goal->getPos().y) < abs(this->oldPos.y - goal->getPos().y);
+    float oldDis = sqrt(pow(this->oldPos.x - goal->getPos().x, 2) + pow(this->oldPos.y - goal->getPos().y, 2));
+    float newDis = sqrt(pow(player->getPosition().x - goal->getPos().x, 2) + pow(player->getPosition().y - goal->getPos().y, 2));
 
-    return (newDis < oldDis
-                ? (diagonal
-                       ? diagonalR
-                       : closerOneDimR)
-                : furtherR) +
-           surviveR;
-    ;
+    // std::cout << "alte distanz: " << oldDis << "\tNeue distanz: " << newDis << "\t unterschied: " << abs(oldDis - newDis) << "\tmove: " << action << "\n";
+
+    if (newDis < oldDis)
+    {
+        if (oldDis - newDis > 1.95f)
+        {
+            return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("strongCloser")->value()) + survival;
+        }
+        return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("weakCloser")->value()) + survival;
+    }
+    return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("notCloser")->value()) + survival;
 }
 
 int Agent::getReward(int action, Energy *goal, Player *player, std::list<MOT *> MOTs)
 {
-    int surviveR = -1;
-    int closerOneDimR = 4;
-    int diagonalR = 8;
-    int furtherR = -4;
-    int collectedR = 200;
-    int collisionR = -200;
+    int survival = std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("survival")->value());
 
-    int totalRewardEnemy = 0;
-
-    // is on energy ( 100 points)
     if (goal->inRange(player))
     {
-        return collectedR;
+        return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("collected")->value()) + survival;
     }
+
+    bool zoneContains = false;
+    bool closerToMOT = false;
 
     std::list<MOT *>::iterator m = MOTs.begin();
     while (m != MOTs.end())
@@ -245,39 +238,40 @@ int Agent::getReward(int action, Energy *goal, Player *player, std::list<MOT *> 
             ++m;
             continue;
         }
+        zoneContains = true;
 
         // when collided with MOT then huge punishment
         if (mot->inRange(player))
         {
-            return collisionR;
+            return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("collided")->value()) + survival;
         }
-        // enemy distance check
-        float oldDis = abs(this->oldPos.x - mot->getPos().x) + abs(this->oldPos.y - mot->getPos().y);
-        float newDis = abs(player->getPosition().x - mot->getPos().x) + abs(player->getPosition().y - mot->getPos().y);
 
-        // here i try weird approach on when got further away from enemie it gives reward and when got closer then punishment.
-        // a diagonal move will even be punished more (sheesh)
-        totalRewardEnemy +=
-            (newDis < oldDis
-                 ? -closerOneDimR
-                 : -furtherR);
+        float oldDisMOT = sqrt(pow(this->oldPos.x - mot->getPos().x, 2) + pow(this->oldPos.y - mot->getPos().y, 2));
+        float newDisMOT = sqrt(pow(player->getPosition().x - mot->getPos().x, 2) + pow(player->getPosition().y - mot->getPos().y, 2));
+
+        if (newDisMOT < oldDisMOT)
+            closerToMOT = true;
 
         m++;
     }
 
-    // energy distance check
-    float oldDis = abs(this->oldPos.x - goal->getPos().x) + abs(this->oldPos.y - goal->getPos().y);
-    float newDis = abs(player->getPosition().x - goal->getPos().x) + abs(player->getPosition().y - goal->getPos().y);
-    bool diagonal =
-        abs(player->getPosition().x - goal->getPos().x) < abs(this->oldPos.x - goal->getPos().x) &&
-        abs(player->getPosition().y - goal->getPos().y) < abs(this->oldPos.y - goal->getPos().y);
+    int addReward = zoneContains
+                        ? closerToMOT
+                              ? std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("closerMOT")->value())
+                              : std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("furtherMOT")->value())
+                        : 0;
+    float oldDisE = sqrt(pow(this->oldPos.x - goal->getPos().x, 2) + pow(this->oldPos.y - goal->getPos().y, 2));
+    float newDisE = sqrt(pow(player->getPosition().x - goal->getPos().x, 2) + pow(player->getPosition().y - goal->getPos().y, 2));
 
-    return (newDis < oldDis
-                ? (diagonal
-                       ? diagonalR
-                       : closerOneDimR)
-                : furtherR) +
-           surviveR + totalRewardEnemy;
+    if (newDisE < oldDisE)
+    {
+        if (oldDisE - newDisE > 1.95f)
+        {
+            return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("strongCloser")->value()) + survival + addReward;
+        }
+        return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("weakCloser")->value()) + survival + addReward;
+    }
+    return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("notCloser")->value()) + survival + addReward;
 }
 
 void Agent::updateVisuall(Player *player, bool enemies)
@@ -371,6 +365,6 @@ bool Agent::isLeft(sf::Vector2f pos, sf::FloatRect sizeObj)
 bool Agent::inZone(sf::Vector2f pos, sf::FloatRect sizeObj, sf::FloatRect sizeP)
 {
     // how far away the enemies can be
-    float zone = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("enemyZone")->value());
+    float zone = std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("enemyZone")->value());
     return (pos.x <= this->oldPos.x + sizeP.width + zone && pos.x + sizeObj.width >= this->oldPos.x - zone) && (pos.y <= this->oldPos.y + sizeP.height + zone && pos.y + sizeObj.height >= this->oldPos.y - zone);
 }

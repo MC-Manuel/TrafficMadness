@@ -6,7 +6,7 @@
 class Slider
 {
 public:
-    Slider(sf::Vector2f midTopBorder, float minVal, float maxVal, float initVal = 0.0f);
+    Slider(float minVal, float maxVal, float initVal = 0.0f);
 
     float getValue();
     void setValue(float newVal);
@@ -23,6 +23,8 @@ private:
     float max;
     float min;
     float val;
+
+    int rectWidth;
 };
 
 #endif

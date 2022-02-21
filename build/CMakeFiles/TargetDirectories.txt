@@ -1,0 +1,2 @@
+C:/Users/Manuel/OneDrive - Kantonsschule Frauenfeld/Dokumente/C++/GitTrafficMadness/build/CMakeFiles/edit_cache.dir
+C:/Users/Manuel/OneDrive - Kantonsschule Frauenfeld/Dokumente/C++/GitTrafficMadness/build/CMakeFiles/rebuild_cache.dir
