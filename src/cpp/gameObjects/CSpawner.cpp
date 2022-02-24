@@ -1,14 +1,30 @@
+/* ***************************************************************
+ *  Datei: CSpawner.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #include "../../header/gameObjects/CSpawner.hpp"
 #include <time.h>
 #include <math.h>
 #include <iostream>
 #include "../../header/global/SInputs.hpp"
 
+/*
+ *  Constructer
+ *
+ */
 Spawner::Spawner()
 {
     this->delay = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("baseMOTdelay")->value());
     this->MOTSpeed = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("baseMOTSpeed")->value());
 }
+
+/*
+ *  Destructer
+ *
+ *  Befreit jeglichen zugeordneten Speicherplatz vom Speicher.
+ */
 Spawner::~Spawner()
 {
     for (auto i : this->listMOT)
@@ -17,6 +33,11 @@ Spawner::~Spawner()
     }
 }
 
+/*
+ *  Erschafft ein neues Verkehrsmittel.
+ *
+ *  return:         (V0.1, @depreciated)Limit der Fahrzeuge erreicht
+ */
 bool Spawner::addMOT()
 {
     Directions tmpDir = this->getRandDir();
@@ -27,6 +48,12 @@ bool Spawner::addMOT()
     return true;
 }
 
+/*
+ *
+ *  Erhöht den Schwierigkeit grad des Spieles.
+ *  Verkehrsmittel sollen sich schneller bewegen und erscheinen.
+ *
+ */
 void Spawner::increaseDifficulty()
 {
     float increase = std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("diffIncrease")->value()); // in %
@@ -34,11 +61,23 @@ void Spawner::increaseDifficulty()
     this->delay -= this->delay <= std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("minDelay")->value()) ? 0 : this->delay * (increase / 100);
 }
 
+/*
+ *
+ *  return:     Delay
+ *
+ */
 float Spawner::getDelay()
 {
     return this->delay;
 }
 
+/*
+ *  Wählt eine Zufällige Randposition aus.
+ *
+ *  Direction D:        An welcher Wand die Zufallsposition entschieden werden soll.
+ *
+ *  return:             Randposition
+ */
 sf::Vector2f Spawner::getRandPos(Directions D)
 {
     int sWidth = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value());
@@ -59,6 +98,13 @@ sf::Vector2f Spawner::getRandPos(Directions D)
     return sf::Vector2f(-1, -1);
 }
 
+/*
+ *  Wählt eine Zufällige Randposition aus.
+ *
+ *  Direction D:        Für welche Wand
+ *
+ *  return:             Bewegungsrichtung
+ */
 sf::Vector2f Spawner::getMultiplierVector(Directions D)
 {
     switch (D)
@@ -76,6 +122,11 @@ sf::Vector2f Spawner::getMultiplierVector(Directions D)
     return sf::Vector2f(0, 0);
 }
 
+/*
+ *  Returniert eine Zufällige Himmelsrichtung
+ *
+ *  return:             Himmelsrichtung
+ */
 Directions Spawner::getRandDir()
 {
 

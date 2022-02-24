@@ -1,3 +1,14 @@
+/* ***************************************************************
+ *  Datei: CPlayer.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Player.
+ *      Nebst der zentralen Bewegungsfunktion                           [move()]
+ *      handhabt sie zusätzlich die Punktzahl des Spielers              [increaseScore()]
+ *      und die Abfrage, ob der Spieler sich noch auf dem Feld befindet [inBounds()].
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef CLASS_PLAYER_H
 #define CLASS_PLAYER_H
 

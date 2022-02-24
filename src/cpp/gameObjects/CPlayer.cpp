@@ -1,9 +1,20 @@
-#include "../../header/gameObjects/CPlayer.hpp"
+/* ***************************************************************
+ *  Datei: CPlayer.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
 #include <iostream>
 
 #include "../../header/global/SInputs.hpp"
+#include "../../header/gameObjects/CPlayer.hpp"
 
+/*
+ *  Constructer
+ *
+ *  float speed:        Geschwindigkeit des Spielers
+ *  int initScore:      (V0.3 @Depreciated)Startpunktezahl des Spielers
+ */
 Player::Player(float speed, int initScore)
 {
     this->pos = sf::Vector2f(std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value()) / 2.0f,
@@ -11,7 +22,6 @@ Player::Player(float speed, int initScore)
     this->speed = speed;
     this->score = initScore;
 
-    // sprite
     this->t.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("player")->first_node("src")->value());
     this->sprite.setTexture(this->t);
     this->source = 0;
@@ -26,11 +36,21 @@ Player::Player(float speed, int initScore)
 
     this->sprite.setPosition(this->pos);
 }
-
+/*
+ *  Destructer
+ *
+ *  (V0.3 @Depreciated)
+ */
 Player::~Player()
 {
 }
 
+/*
+ *  Bewegt und animiert den Spieler.
+ *
+ *  Vector2f vector:        Benutzereingaben
+ *  float dt:               Deltatime
+ */
 void Player::move(sf::Vector2f vector, float dt)
 {
     sf::Vector2f tmpPos = this->pos;
@@ -71,21 +91,43 @@ void Player::move(sf::Vector2f vector, float dt)
     this->sprite.setPosition(this->pos);
 }
 
+/*
+ *  Erhöht die Spielerpunktzahl
+ *
+ *  unsigned int amount:    Anzahl um die erhöht werden sollte
+ *
+ */
 void Player::increaseScore(unsigned int amount)
 {
     this->score += amount;
 }
 
+/*
+ *  return:     Spielerpunktzahl
+ *
+ */
 int Player::getScore()
 {
     return this->score;
 }
 
+/*
+ *  return:     Spielerposition
+ *
+ */
 sf::Vector2f Player::getPosition()
 {
     return this->pos;
 }
 
+/*
+ *  Überprüft ob der Spieler sich im Spielfeld befindet
+ *
+ *  Vector2f point:     Position des Spielers
+ *
+ *  return:             Im Spielfeld?
+ *
+ */
 bool Player::inBounds(sf::Vector2f point)
 {
     int sWidth = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value());

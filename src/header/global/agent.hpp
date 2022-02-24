@@ -1,3 +1,13 @@
+/* ***************************************************************
+ *  Datei: agent.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Agent.
+ *      Sie umfasst alle wichtigen Varablen und Methoden für den
+ *      Q-Learning Algorithmus
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef AGENT_H
 #define AGENT_H
 

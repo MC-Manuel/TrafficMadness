@@ -1,3 +1,15 @@
+/* ***************************************************************
+ *  Datei: CButton.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Button.
+ *      Sie kann global in allen Klassen genutzt werden.
+ *      Das Herzstück dieser Klasse mach die [isOnButton()]
+ *      Methode aus. Sie überprüft ob ein mitgegebener Punkt auf dem
+ *      Knopf ist.
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef CLASS_BUTTON_H
 #define CLASS_BUTTON_H
 

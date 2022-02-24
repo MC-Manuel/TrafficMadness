@@ -1,14 +1,26 @@
-#include "../../header/global/game.hpp"
+/* ***************************************************************
+ *  Datei: game.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
 #include <iostream>
 #include <algorithm>
 
+#include "../../header/global/game.hpp"
+
+/*
+ *  Constructor
+ *
+ *  RenderWindow *window:       Fenster auf das gezeichnet wird
+ *  State mode:                 Zustand des Spieles
+ *
+ */
 Game::Game(sf::RenderWindow *window, State mode)
 {
     srand(time(NULL));
     window->setFramerateLimit(std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("fpsCap")->value()));
 
-    // FONT FOR FPS and SCORE
     font.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("infoFont")->value());
     fps.setFont(font);
     fps.setCharacterSize(8);
@@ -48,6 +60,11 @@ Game::Game(sf::RenderWindow *window, State mode)
     this->background.setTexture(t);
 }
 
+/*
+ *  Destructer
+ *
+ *  Befreit jeglichen zugeordneten Speicherplatz vom Speicher.
+ */
 Game::~Game()
 {
     for (int i = 0; i < this->players.size(); ++i)
@@ -59,6 +76,15 @@ Game::~Game()
     delete (this->energyBar);
 }
 
+/*
+ *  Game-Loop. Hier Geschieht die gesammte Logik des Spieles jeden Frame.
+ *
+ *  RenderWindow *window:       Fenster auf das gezeichnet wird
+ *  State mode:                 Zustand in welchem sich das Spiel befindet (Home, User, AI_NoEnemy, AI_YesEnemy)
+ *  Agent *agent:               Die künstliche Intelligenz welche das Spiel bedient
+ *
+ *  return:                     Noch nicht verloren?
+ */
 bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
 {
     float framerate = 1.0f / frame.getElapsedTime().asSeconds();
@@ -95,7 +121,7 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
                             : agent->getState(this->recharger, this->players[i], this->spawner->listMOT);
 
             int ACTION;
-            if (rand() / float(RAND_MAX) < agent->epsilon) // /distinguish between exploit and explore
+            if (rand() / float(RAND_MAX) < agent->epsilon)
             {
                 // exlore
                 ACTION = rand() % 8;
@@ -121,7 +147,6 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
                                   : agent->getState(this->recharger, this->players[i], this->spawner->listMOT);
 
             agent->updateQTable(STATE, FUTURESTATE, ACTION, REWARD);
-            //                                                  learning time ( should decrease over time, else the learing will be lower)
 
             if (this->players.size() == 1)
             {
@@ -157,8 +182,6 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
                 this->timer.restart();
             }
 
-        // loop though all the MOT on the field
-        // maybe this need to be threaded because of efficiency
         std::list<MOT *>::iterator m = this->spawner->listMOT.begin();
         while (m != this->spawner->listMOT.end())
         {
@@ -185,7 +208,7 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
 
         if (mot->advance(deltaTime))
         {
-            // is out of bouns
+            // is out of bounds
             this->spawner->listMOT.erase(m++);
             continue;
         }
@@ -195,6 +218,9 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
     if (this->players.size() > 1)
     {
         sprintf(temp, "Generation %d\nEpsilon: %f\nGenDropoff %f\nDicount Factor: %f\nAlpha: ", agent->gen, agent->epsilon, agent->genDropoff, agent->discountFactor, agent->alpha);
+    }
+    if (mode != State::User)
+    {
         agent->overviewT.setString(temp);
         agent->overviewT.setPosition(window->getSize().x - agent->overviewT.getGlobalBounds().width, 0);
     }
@@ -211,6 +237,11 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
     return true;
 }
 
+/*
+ *  Zeichnet alle Spielobjekte auf den Bildschirm
+ *
+ *  RenderWindow *window:       Fenster auf dem gezeichnet wird
+ */
 void Game::draw(sf::RenderWindow *window)
 {
     for (int i = 0; i < this->players.size(); ++i)
@@ -233,6 +264,9 @@ void Game::draw(sf::RenderWindow *window)
     window->draw(this->energyBar->sFill);
 }
 
+/*
+ *  retrun:         Wie viele Spieler von der KI gesteuert werden
+ */
 int Game::getPlayerAmount()
 {
     return this->players.size();

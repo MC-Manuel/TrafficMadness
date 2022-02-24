@@ -1,8 +1,18 @@
-#include "../../header/gameObjects/CEnergy.hpp"
+/* ***************************************************************
+ *  Datei: CEnergy.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #include <time.h>
 
 #include "../../header/global/SInputs.hpp"
+#include "../../header/gameObjects/CEnergy.hpp"
 
+/*
+ *  Constructer
+ *
+ */
 Energy::Energy()
 {
     this->pos = getRandPos();
@@ -16,6 +26,11 @@ Energy::Energy()
         std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("energy")->value()))); // global scale for maybe multiple screens
 }
 
+/*
+ *  Wählt eine zufällige Position auf dem Spielfeld aus
+ *
+ *  return:         Position
+ */
 sf::Vector2f Energy::getRandPos()
 {
 
@@ -25,9 +40,13 @@ sf::Vector2f Energy::getRandPos()
     return sf::Vector2f(rand() % (int)(sWidth - this->sprite.getGlobalBounds().width), rand() % (int)(sHeight - this->sprite.getGlobalBounds().height));
 }
 
+/*
+ *  Überprüft ob der Spieler den Energydrink berührt hat.
+ *
+ *  return:         Berührung?
+ */
 bool Energy::inRange(Player *p)
 {
-    // this will only work if the player is bigger than the energy
     return (this->pos.x >= p->getPosition().x && this->pos.x <= p->getPosition().x + p->sprite.getGlobalBounds().width) &&
                (this->pos.y >= p->getPosition().y && this->pos.y <= p->getPosition().y + p->sprite.getGlobalBounds().height) ||
            (this->pos.x >= p->getPosition().x && this->pos.x <= p->getPosition().x + p->sprite.getGlobalBounds().width) &&
@@ -38,6 +57,9 @@ bool Energy::inRange(Player *p)
                (this->pos.y + this->sprite.getGlobalBounds().height >= p->getPosition().y && this->pos.y + this->sprite.getGlobalBounds().height <= p->getPosition().y + p->sprite.getGlobalBounds().height);
 }
 
+/*
+ *  return:         Position
+ */
 sf::Vector2f Energy::getPos()
 {
     return this->pos;

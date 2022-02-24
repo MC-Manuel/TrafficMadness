@@ -1,3 +1,12 @@
+/* ***************************************************************
+ *  Datei: CEnergy.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Energy.
+ *      Sie umfasss die zufällige Positionsberechnung und
+ *      überprüft, ob der Spieler in der nähe des Energydrinks ist.
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 #ifndef CLASS_ENERGY_H
 #define CLASS_ENERGY_H
 

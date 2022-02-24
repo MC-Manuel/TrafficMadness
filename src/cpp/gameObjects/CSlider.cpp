@@ -1,10 +1,22 @@
-#include "../../header/gameObjects/CSlider.hpp"
-
-#include "../../header/global/SInputs.hpp"
+/* ***************************************************************
+ *  Datei: CSlider.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
 #include <iostream>
 #include <math.h>
 
+#include "../../header/gameObjects/CSlider.hpp"
+#include "../../header/global/SInputs.hpp"
+
+/*
+ *  Constructer
+ *
+ *  float minVal:       Wert bei welchem der Slider eine 0% Breite hat
+ *  float maxVal:       Wert bei welchem der Slider eine 100% Breite hat
+ *  float initVal:      Startwert des Sliders
+ */
 Slider::Slider(float minVal, float maxVal, float initVal)
 {
     this->min = minVal;
@@ -35,17 +47,33 @@ Slider::Slider(float minVal, float maxVal, float initVal)
         this->sBorder.getPosition().y);
 }
 
+/*
+ *  return:     Aktueller Wert
+ *
+ */
 float Slider::getValue()
 {
     return this->val;
 }
 
+/*
+ *  Legt einen neuen Wert fest.
+ *
+ *  float newVal:       Neuer Wert
+ */
 void Slider::setValue(float newVal)
 {
     this->val = newVal;
     this->update();
 }
 
+/*
+ *  Verändert den Wert um [Step] Einheiten.
+ *
+ *  float step:     Veränderung
+ *
+ *  return:         Minimum erreicht?
+ */
 bool Slider::vary(float step)
 {
     this->val += step;
@@ -53,6 +81,10 @@ bool Slider::vary(float step)
     return this->val <= this->min;
 }
 
+/*
+ *  Aktualisiert die Anzeige des Sliders. Setzt Maximum und aktuellen Wert in ein Verhältniss.
+ *
+ */
 void Slider::update()
 {
     this->sFill.setTextureRect(

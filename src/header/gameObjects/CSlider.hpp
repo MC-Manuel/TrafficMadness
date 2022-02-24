@@ -1,3 +1,12 @@
+/* ***************************************************************
+ *  Datei: CSlider.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Slider.
+ *      Verleiht dem Spiel einen gewissen Stressfaktor
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef CLASS_SLIDER_H
 #define CLASS_SLIDER_H
 

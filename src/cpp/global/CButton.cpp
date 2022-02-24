@@ -1,7 +1,24 @@
-#include "../../header/global/CButton.hpp"
-#include "../../header/global/SInputs.hpp"
+/* ***************************************************************
+ *  Datei: CButton.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #include <iostream>
 
+#include "../../header/global/CButton.hpp"
+#include "../../header/global/SInputs.hpp"
+
+/*
+ *  Constructor
+ *
+ *  Vector position:        Position (Top Left)
+ *  char textOnButton[]:    Button Inhalt
+ *  bool initState:         Aktiviert oder deaktiviert
+ *  int charSize:           Schrifftgrösse
+ *  BType type:             Type, definiert die Grösse
+ *
+ */
 Button::Button(sf::Vector2f position, char textOnButton[], bool initState, int charSize, BType type)
 {
     this->font.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("buttonFont")->value());
@@ -24,12 +41,24 @@ Button::Button(sf::Vector2f position, char textOnButton[], bool initState, int c
     this->enabled = initState;
 }
 
+/*
+ *  Zeichnet den Knopf auf den Bildschirm
+ *
+ *  RenderWindow *window:       Feld auf welches gezeichnet wird
+ */
 void Button::show(sf::RenderWindow *window)
 {
     window->draw(this->sprite);
     window->draw(this->text);
 }
 
+/*
+ *  Überprüft ein mitgegebener Punkt auf dem Knopf ist.
+ *
+ *  Vector2f point:         Mausposition
+ *
+ *  return:                 Auf Knopf?
+ */
 bool Button::isOnButton(sf::Vector2f point)
 {
     if (!enabled)

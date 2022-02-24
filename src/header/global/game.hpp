@@ -1,3 +1,14 @@
+/* ***************************************************************
+ *  Datei: game.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Game.
+ *      Diese Umfasst sämtliche Funktionalitäten der Game-Loop.
+ *      Die Hauptkomponenten sind die [update()] sowie die [draw()]
+ *      Methoden.
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef MAIN_GAME_H
 #define MAIN_GAME_H
 

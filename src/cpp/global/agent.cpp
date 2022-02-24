@@ -1,4 +1,8 @@
-#include "../../header/global/agent.hpp"
+/* ***************************************************************
+ *  Datei: agent.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
 #include <math.h>
 #include <string>
@@ -8,14 +12,18 @@
 #include <sstream>
 
 #include "../../header/global/SInputs.hpp"
+#include "../../header/global/agent.hpp"
 
+/*
+ *  Constructer
+ *
+ *  int states:     Anzahl Zustände welche Q-Tabele besitzt
+ */
 Agent::Agent(int states)
 {
     this->QTable = std::vector<std::vector<float>>(
         states,
         std::vector<float>(8));
-    // states = how many states the agent can be in
-    // 8 = how many actions
 
     sf::RectangleShape base;
     base.setOutlineColor(sf::Color(0, 163, 7));
@@ -39,18 +47,30 @@ Agent::Agent(int states)
     this->epsilon = std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("initEpsilon")->value());
 }
 
+/*
+ *  Kalkuliert den Verschiebungsvektor einer ausgewählten bewegung.
+ *
+ *  int id:     Ausgewählte Aktion basierend auf folgende Achsen
+ *       5   6   7
+ *        ╲  │  ╱
+ *    4 ━━      ━━ 0
+ *        ╱  │  ╲
+ *       3   2   1
+ *  return:     Verschiebungsvektor
+ */
 sf::Vector2f Agent::getAction(int id)
 {
-    /*  id =
-        5    6   7
-          ╲  │  ╱
-       4 ━━     ━━ 0
-          ╱  │  ╲
-         3   2   1
-    */
     return sf::Vector2f(cos(id * -45), sin(id * -45));
 }
 
+/*
+ *  Kalkuliert den Zustand (ohne Gegner)
+ *
+ *  Energy *goal:       Ziel des Agenten
+ *  Player *player:     Spieler welcher der Agent gerade steuert
+ *
+ *  return:             Zustand für den gesteuerten Spieler
+ */
 int Agent::getState(Energy *goal, Player *player)
 {
     int state = 0;
@@ -63,6 +83,15 @@ int Agent::getState(Energy *goal, Player *player)
     return state;
 }
 
+/*
+ *  Kalkuliert den Zustand (mit Gegner)
+ *
+ *  Energy *goal:       Ziel des Agenten
+ *  Player *player:     Spieler welcher der Agent gerade steuert
+ *  List<Mot*> MOTs:    Liste aller aktiven Verkehrsmittel
+ *
+ *  return:             Zustand für den gesteuerten Spieler
+ */
 int Agent::getState(Energy *goal, Player *player, std::list<MOT *> MOTs)
 {
     int state = 0;
@@ -72,7 +101,6 @@ int Agent::getState(Energy *goal, Player *player, std::list<MOT *> MOTs)
     state += isRight(goal->getPos(), goal->sprite.getGlobalBounds(), player->sprite.getGlobalBounds()) * pow(2, 2);
     state += isLeft(goal->getPos(), goal->sprite.getGlobalBounds()) * pow(2, 3);
 
-    // iterate throught list and check if any is in range
     // 0 = in range
     // 1 = above
     // 2 = below
@@ -120,15 +148,25 @@ int Agent::getState(Energy *goal, Player *player, std::list<MOT *> MOTs)
     return state;
 }
 
+/*
+ *  Aktuallisiert die Q-Tabelle mithilfe der Bellman Formel
+ *
+ *  int currentState:       Zustand t
+ *  int futureState:        Zustand t+1
+ *  int action:             Ausgeführte Aktion
+ *  int reward:             Belohnung für die ausgeführte Aktion
+ */
 void Agent::updateQTable(int currentState, int futureState, int action, int reward)
 {
-    // Bellman Equation
-    // std::cout << QTable[currentState][action];
     QTable[currentState][action] = (1 - this->alpha) * QTable[currentState][action] +
                                    this->alpha * (reward + this->discountFactor * (*max_element(QTable[futureState].begin(), QTable[futureState].end())));
-    // std::cout << (*max_element(QTable[futureState].begin(), QTable[futureState].end()));
 }
 
+/*
+ *  Konvertiert und Speichert die gerade verwendete Q-Tabelle des Agenten
+ *
+ *  String &buffer:     Variable in welche die konvertierte Q-Tabelle gespeichert wird
+ */
 void Agent::getQTable(std::string &buffer)
 {
     buffer = '^';
@@ -146,10 +184,15 @@ void Agent::getQTable(std::string &buffer)
     buffer += '^';
 }
 
+/*
+ *  Konvertiert und setzt eine aus der Zwischenablage eingefügte Q-Tabelle in den Agenten ein.
+ *
+ *  String buffer:      Eingelesene Q-Tabelle
+ *
+ *  return:             Valide Eingabe
+ */
 bool Agent::setQTable(std::string buffer)
 {
-    // convert string (buffer) to vector<vector<float>>
-    // also check string that ai(no enemy is really only 16 States)
     if (buffer[0] != '^')
         return false;
 
@@ -189,11 +232,20 @@ bool Agent::setQTable(std::string buffer)
     return true;
 }
 
+/*
+ *  Berechnet die Belohnung für eine ausgeführte Aktion.
+ *  (ohne Gegner)
+ *
+ *  int action:         Getätigte Aktion des Agenten
+ *  Energy *goal:       Ziel des Agenten
+ *  Player *player:     Gesteuerter Spieler des Agenten
+ *
+ *  return:             Belohnung
+ */
 int Agent::getReward(int action, Energy *goal, Player *player)
 {
     int survival = std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("survival")->value());
 
-    // is on energy ( 100 points)
     if (goal->inRange(player))
     {
         return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("collected")->value()) + survival;
@@ -201,8 +253,6 @@ int Agent::getReward(int action, Energy *goal, Player *player)
 
     float oldDis = sqrt(pow(this->oldPos.x - goal->getPos().x, 2) + pow(this->oldPos.y - goal->getPos().y, 2));
     float newDis = sqrt(pow(player->getPosition().x - goal->getPos().x, 2) + pow(player->getPosition().y - goal->getPos().y, 2));
-
-    // std::cout << "alte distanz: " << oldDis << "\tNeue distanz: " << newDis << "\t unterschied: " << abs(oldDis - newDis) << "\tmove: " << action << "\n";
 
     if (newDis < oldDis)
     {
@@ -215,6 +265,17 @@ int Agent::getReward(int action, Energy *goal, Player *player)
     return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("notCloser")->value()) + survival;
 }
 
+/*
+ *  Berechnet die Belohnung für eine ausgeführte Aktion.
+ *  (mit Gegner)
+ *
+ *  int action:         Getätigte Aktion des Agenten
+ *  Energy *goal:       Ziel des Agenten
+ *  Player *player:     Gesteuerter Spieler des Agenten
+ *  List<MOT*> MOTs:    Alle auf dem Feld befindenden Verkehrsmittel
+ *
+ *  return:             Belohnung
+ */
 int Agent::getReward(int action, Energy *goal, Player *player, std::list<MOT *> MOTs)
 {
     int survival = std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("survival")->value());
@@ -234,13 +295,11 @@ int Agent::getReward(int action, Energy *goal, Player *player, std::list<MOT *> 
 
         if (!this->inZone(mot->getPos(), mot->spriteM.getGlobalBounds(), player->sprite.getGlobalBounds()))
         {
-            // when the enemy is not in Range
             ++m;
             continue;
         }
         zoneContains = true;
 
-        // when collided with MOT then huge punishment
         if (mot->inRange(player))
         {
             return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("collided")->value()) + survival;
@@ -274,23 +333,23 @@ int Agent::getReward(int action, Energy *goal, Player *player, std::list<MOT *> 
     return std::stoi(Input::doc->first_node("data")->first_node("agent")->first_node("reward")->first_node("notCloser")->value()) + survival + addReward;
 }
 
+/*
+ *  Aktualisiert und zeichnet die Abfragen der einzelnen Zustände.
+ *  Schema:
+ *    tl   │t│     tr
+ *    _____│ │_______
+ *   l______❏_______r
+ *         │ │
+ *    bl   │b│     br
+ *
+ *  Player *player:     Gesteuerter Spieler des Agenten
+ *  bool enemies:       Ob "Complex Training" aktiviert ist. (Ob es Verkehrsmittel auf dem Feld gibt)
+ *
+ */
 void Agent::updateVisuall(Player *player, bool enemies)
 {
     int sWidth = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value());
     int sHeight = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value());
-
-    /*
-    t = top
-    b = bottom
-    r = right
-    l = left
-
-    tl   │t│     tr
-    _____│ │_______
-   l______❏_______r
-         │ │
-    bl   │b│     br
-    */
 
     for (int i = 0; i < this->statesVisuall.size(); ++i)
     {
@@ -339,32 +398,60 @@ void Agent::updateVisuall(Player *player, bool enemies)
 }
 
 /*
-         │ │
-    _____│ │_______
-    ______❏_______
-         │ │
-         │ │
-*/
-
+ *  Überprüft, ob eine angegebene Position [über] dem vom Agenten gesteuerten Spieler ist.
+ *
+ *  Vector2f pos:       Die zu vergleichende Position
+ *  FloatRect sizeObj:  Dimensionen, des zur Position gehörenden Objektes
+ */
 bool Agent::isAbove(sf::Vector2f pos, sf::FloatRect sizeObj)
 {
     return pos.y < this->oldPos.y && pos.y + sizeObj.height < this->oldPos.y;
 }
+
+/*
+ *  Überprüft, ob eine angegebene Position [unter] dem vom Agenten gesteuerten Spieler ist.
+ *
+ *  Vector2f pos:       Die zu vergleichende Position
+ *  FloatRect sizeObj:  Dimensionen, des zur Position gehörenden Objektes
+ *  FloatRect sizeP:    Dimensionen, des von Agenten gesteuerten Spielers
+ */
 bool Agent::isBelow(sf::Vector2f pos, sf::FloatRect sizeObj, sf::FloatRect sizeP)
 {
     return pos.y > this->oldPos.y + sizeP.height && pos.y + sizeObj.height > this->oldPos.y + sizeP.height;
 }
+
+/*
+ *  Überprüft, ob eine angegebene Position auf der [rechten] Seite des vom Agenten gesteuerten Spieler ist.
+ *
+ *  Vector2f pos:       Die zu vergleichende Position
+ *  FloatRect sizeObj:  Dimensionen, des zur Position gehörenden Objektes
+ *  FloatRect sizeP:    Dimensionen, des von Agenten gesteuerten Spielers
+ */
 bool Agent::isRight(sf::Vector2f pos, sf::FloatRect sizeObj, sf::FloatRect sizeP)
 {
     return pos.x > this->oldPos.x + sizeP.width && pos.x + sizeObj.width > this->oldPos.x + sizeP.width;
 }
+
+/*
+ *  Überprüft, ob eine angegebene Position [über] dem vom Agenten gesteuerten Spieler ist.
+ *
+ *  Vector2f pos:       Die zu vergleichende Position
+ *  FloatRect sizeObj:  Dimensionen, des zur Position gehörenden Objektes
+ */
 bool Agent::isLeft(sf::Vector2f pos, sf::FloatRect sizeObj)
 {
     return pos.x < this->oldPos.x && pos.x + sizeObj.width < this->oldPos.x;
 }
+
+/*
+ *  Überprüft, ob eine angegebene Position in der [Erkennuungszone] des vom Agenten gesteuerten Spieler ist.
+ *
+ *  Vector2f pos:       Die zu vergleichende Position
+ *  FloatRect sizeObj:  Dimensionen, des zur Position gehörenden Objektes
+ *  FloatRect sizeP:    Dimensionen, des von Agenten gesteuerten Spielers
+ */
 bool Agent::inZone(sf::Vector2f pos, sf::FloatRect sizeObj, sf::FloatRect sizeP)
 {
-    // how far away the enemies can be
     float zone = std::stof(Input::doc->first_node("data")->first_node("agent")->first_node("enemyZone")->value());
     return (pos.x <= this->oldPos.x + sizeP.width + zone && pos.x + sizeObj.width >= this->oldPos.x - zone) && (pos.y <= this->oldPos.y + sizeP.height + zone && pos.y + sizeObj.height >= this->oldPos.y - zone);
 }

@@ -1,3 +1,14 @@
+/* ***************************************************************
+ *  Datei: CSpawner.hpp
+ *  Beschreibung:
+ *      Definition der Klasse Spawner.
+ *      Sie ist dafür verantwortlich die einzelnen Verkehrsmittel
+ *      zu erschaffen.
+ *      Zusätzlich enthält sie ein Enum für die einzelnen Himmelsrichtungen.
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef CLASS_SPAWNER_H
 #define CLASS_SPAWNER_H
 
@@ -22,7 +33,7 @@ public:
     Spawner();
     ~Spawner();
 
-    bool addMOT(); // could give id, but for now this function chooses randomly
+    bool addMOT();
     float getDelay();
 
     std::list<MOT *> listMOT;
@@ -34,7 +45,7 @@ private:
 
     void increaseDifficulty();
 
-    float delay; // in seconds
+    float delay;
     float MOTSpeed;
 };
 

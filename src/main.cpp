@@ -1,5 +1,13 @@
-#include <SFML/Graphics.hpp>
+/* ***************************************************************
+ *  Datei: main.cpp
+ *  Beschreibung:
+ *      Der Eingangspunkt der Applikation.
+ *
+ * Copyright (c) Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
+// Include
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
 #include <time.h>
@@ -7,6 +15,7 @@
 #include <fstream>
 #include <math.h>
 
+// Header
 #include "header/global/game.hpp"
 #include "header/global/CButton.hpp"
 #include "external/rapidxml.hpp"
@@ -24,7 +33,7 @@ int main()
         sf::VideoMode(
             std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value()),
             std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value())),
-        "SA Projekt", sf::Style::Close | sf::Style::Close | sf::Style::Titlebar);
+        "Traffic Madness", sf::Style::Close | sf::Style::Close | sf::Style::Titlebar);
 
     Game *game = nullptr;
 

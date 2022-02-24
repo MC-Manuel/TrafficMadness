@@ -29,7 +29,7 @@
             <collided>-200</collided>
         </reward>
 
-        <learners>5</learners>
+        <learners>1</learners>
         <enemyZone>200</enemyZone>
         <initEpsilon>1</initEpsilon>
     </agent>

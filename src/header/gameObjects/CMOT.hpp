@@ -1,3 +1,14 @@
+/* ***************************************************************
+ *  Datei: CMOT.hpp
+ *  Beschreibung:
+ *      Definition der Klasse MOT.
+ *      Beinhaltet die Bewegung des Vekehrsmittel                   [advance()],
+ *      die Abfrage obder Spieler in Berührung gekommen ist         [inRange()]
+ *      und die Andeutung das bald ein Verkehrsmittel gespawnt wird [waiting()] .
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
+
 #ifndef CLASS_MOT_H
 #define CLASS_MOT_H
 

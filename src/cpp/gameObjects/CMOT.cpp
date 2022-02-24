@@ -1,7 +1,19 @@
-#include "../../header/gameObjects/CMOT.hpp"
+/* ***************************************************************
+ *  Datei: CMOT.cpp
+ *
+ * Copyright © Manuel Capeder, Traffic Madness, 25.02.2022
+ *************************************************************** */
 
+#include "../../header/gameObjects/CMOT.hpp"
 #include "../../header/global/SInputs.hpp"
 
+/*
+ *  Constructer
+ *
+ *  Vector2f startP:    Startposition
+ *  Vector2f multP:     Fahrtrichtung
+ *  float speed:        Geschwindigkeit
+ */
 MOT::MOT(sf::Vector2f startP, sf::Vector2f multP, float speed)
 {
 
@@ -25,10 +37,19 @@ MOT::MOT(sf::Vector2f startP, sf::Vector2f multP, float speed)
                                           : sf::Vector2f(0, 0)))); // exceptions bottom and right
 }
 
+/*
+ *  Destructer
+ *
+ */
 MOT::~MOT()
 {
 }
 
+/*
+ *  Wartet eine benutzerdefiniert Zeit bevor das Verkehrsmittel erschaffen wird. Während dieser
+ *  Zeit wird ein Ausrufezeichen angezeigt.
+ *
+ */
 void MOT::waiting()
 {
     if (this->timer->getElapsedTime().asSeconds() >= std::stof(Input::doc->first_node("data")->first_node("gameData")->first_node("MOTbeforeTime")->value()))
@@ -50,11 +71,22 @@ void MOT::waiting()
     }
 }
 
+/*
+ *  return:     Position
+ *
+ */
 sf::Vector2f MOT::getPos()
 {
     return this->pos;
 }
 
+/*
+ *  Bewegt den Spieler in Fahrtrichtung.
+ *
+ *  float dt:       Deltatime
+ *
+ *  return:         Kollidiert mit einer Wand?
+ */
 bool MOT::advance(float dt)
 {
     this->pos.x += this->dirct.x * this->speed * dt;
@@ -70,8 +102,16 @@ bool MOT::advance(float dt)
     return false;
 }
 
+/*
+ *  Überprüft ob der Spieler [p] das Verkehrsmittel berührt hat.
+ *
+ *  Player *p:      Spieler
+ *
+ *  return:         Kollision?
+ */
 bool MOT::inRange(Player *p)
 {
+    // Kann mit Matheformel vereinfacht werden
     return (this->pos.x >= p->getPosition().x && this->pos.x <= p->getPosition().x + p->sprite.getGlobalBounds().width) &&
                (this->pos.y >= p->getPosition().y && this->pos.y <= p->getPosition().y + p->sprite.getGlobalBounds().height) ||
            (this->pos.x >= p->getPosition().x && this->pos.x <= p->getPosition().x + p->sprite.getGlobalBounds().width) &&
