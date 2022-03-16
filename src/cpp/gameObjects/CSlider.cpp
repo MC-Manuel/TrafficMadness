@@ -32,7 +32,7 @@ Slider::Slider(float minVal, float maxVal, float initVal)
     this->sBorder.setOrigin(this->sBorder.getLocalBounds().width / 2, this->sBorder.getLocalBounds().height / 2);
     this->sBorder.setPosition(
         std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value()) / 2,
-        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value()) * 0.035);
+        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value()) * 0.055);
 
     this->tFill.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("slider")->first_node("fill")->value());
     this->sFill.setTexture(this->tFill);

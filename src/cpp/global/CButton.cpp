@@ -48,8 +48,20 @@ Button::Button(sf::Vector2f position, char textOnButton[], bool initState, int c
  */
 void Button::show(sf::RenderWindow *window)
 {
-    window->draw(this->sprite);
-    window->draw(this->text);
+    if (this->succ)
+    {
+        sf::Texture tS;
+        tS.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("success")->value());
+        sf::Sprite successful(tS);
+        successful.setScale(this->sprite.getScale());
+        successful.setPosition(this->sprite.getPosition());
+        window->draw(successful);
+    }
+    else
+    {
+        window->draw(this->sprite);
+        window->draw(this->text);
+    }
 }
 
 /*

@@ -37,7 +37,7 @@ sf::Vector2f Energy::getRandPos()
     int sWidth = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value());
     int sHeight = std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value());
 
-    return sf::Vector2f(rand() % (int)(sWidth - this->sprite.getGlobalBounds().width), rand() % (int)(sHeight - this->sprite.getGlobalBounds().height));
+    return sf::Vector2f(rand() % (sWidth - (int)this->sprite.getGlobalBounds().width), rand() % (sHeight - (int)this->sprite.getGlobalBounds().height));
 }
 
 /*

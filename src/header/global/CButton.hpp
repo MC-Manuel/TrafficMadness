@@ -29,6 +29,7 @@ public:
     bool isOnButton(sf::Vector2f point);
     void show(sf::RenderWindow *window);
 
+    bool succ = false;
     bool enabled = true;
 
     sf::Texture texture;

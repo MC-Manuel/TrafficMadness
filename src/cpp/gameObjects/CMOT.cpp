@@ -64,7 +64,7 @@ void MOT::waiting()
 
         this->spriteM.setScale(sf::Vector2f(
             std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("MOT")->value()),
-            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("MOT")->value()))); // global scale for maybe multiple screens
+            std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("scaleFactor")->first_node("MOT")->value())));
 
         this->wait = false;
         delete (this->timer);

@@ -72,5 +72,6 @@
         <titelFont>../assets/fonts/wheaton_capitals.otf</titelFont>
         <buttonFont>../assets/fonts/rimouski_sb.otf</buttonFont>
         <infoFont>../assets/fonts/arial.ttf</infoFont>
+        <success>../assets/MENU/success.png</success>
     </assets>
 </data>

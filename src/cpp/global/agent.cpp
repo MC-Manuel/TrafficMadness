@@ -181,7 +181,10 @@ void Agent::getQTable(std::string &buffer)
         buffer.pop_back();
         buffer += "}\n";
     }
-    buffer += '^';
+    buffer += '~';
+    buffer += std::to_string(this->epsilon);
+    buffer += ':';
+    buffer += std::to_string(this->gen);
 }
 
 /*
@@ -201,6 +204,8 @@ bool Agent::setQTable(std::string buffer)
     unsigned int openIdx = 0;
     for (int i = 1; i < buffer.length(); ++i)
     {
+        if (buffer[i] == '~')
+            break;
         if (buffer[i] == '{')
             openIdx = i;
         if (buffer[i] == '}')
@@ -227,8 +232,9 @@ bool Agent::setQTable(std::string buffer)
             temp.push_back(v);
         }
     }
-
     this->QTable = temp;
+    this->epsilon = std::stof(buffer.substr(buffer.find('~') + 1, buffer.find(':')));
+    this->gen = std::stoi(buffer.substr(buffer.find(':') + 1));
     return true;
 }
 

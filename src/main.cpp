@@ -174,14 +174,19 @@ int main()
                     {
                         sf::String str = sf::Clipboard::getString();
                         std::string bufferQTable = str.toAnsiString();
-                        agent->setQTable(bufferQTable);
+                        inQTable->succ = agent->setQTable(bufferQTable);
                     }
                     if (goHome->isOnButton((sf::Vector2f)sf::Mouse::getPosition(window)))
                     {
+                        preGame = false;
                         inQTable->enabled = false;
                         goHome->enabled = false;
                         goOn->enabled = false;
-                        preGame = false;
+                        buttonPlayer->enabled = true;
+                        buttonAIE->enabled = true;
+                        buttonAINE->enabled = true;
+                        gameState = State::Home;
+                        inQTable->succ = false;
                     }
                 }
                 if (afterGame)
@@ -189,6 +194,7 @@ int main()
                     if (outQTable->isOnButton((sf::Vector2f)sf::Mouse::getPosition(window)))
                     {
                         sf::Clipboard::setString(bufferQTable);
+                        outQTable->succ = true;
                     }
                 }
                 if (preGame || afterGame)
@@ -202,6 +208,7 @@ int main()
                             inQTable->enabled = false;
                             goHome->enabled = false;
                             goOn->enabled = false;
+                            inQTable->succ = false;
                         }
                         if (afterGame)
                         {
@@ -211,6 +218,8 @@ int main()
                             buttonPlayer->enabled = true;
                             buttonAIE->enabled = true;
                             buttonAINE->enabled = true;
+                            gameState = State::Home;
+                            outQTable->succ = false;
                         }
                     }
                 }

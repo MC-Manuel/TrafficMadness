@@ -21,7 +21,7 @@ Game::Game(sf::RenderWindow *window, State mode)
     srand(time(NULL));
     window->setFramerateLimit(std::stoi(Input::doc->first_node("data")->first_node("meta")->first_node("fpsCap")->value()));
 
-    font.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("infoFont")->value());
+    font.loadFromFile(Input::doc->first_node("data")->first_node("assets")->first_node("titelFont")->value());
     fps.setFont(font);
     fps.setCharacterSize(8);
     fps.setFillColor(sf::Color::Green);
@@ -31,7 +31,7 @@ Game::Game(sf::RenderWindow *window, State mode)
     score.setOrigin(score.getLocalBounds().width / 2, 0);
     score.setPosition(
         std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("x")->value()) / 2,
-        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value()) * 0.095);
+        std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("screen")->first_node("y")->value()) * 0.1);
 
     if (std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("delayBetweenMoves")->value()) != 0)
     {
@@ -176,7 +176,7 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
 
         // add MOT
         if (mode != State::AI_NoEnemy)
-            if (this->timer.getElapsedTime().asSeconds() >= this->spawner->getDelay())
+            if (this->timer.getElapsedTime().asSeconds() >= this->spawner->getDelay() + std::stof(Input::doc->first_node("data")->first_node("meta")->first_node("delayBetweenMoves")->value()) * 60)
             {
                 this->spawner->addMOT();
                 this->timer.restart();
@@ -217,7 +217,7 @@ bool Game::update(sf::RenderWindow *window, State mode, Agent *agent)
 
     if (this->players.size() > 1)
     {
-        sprintf(temp, "Generation %d\nEpsilon: %f\nGenDropoff %f\nDicount Factor: %f\nAlpha: ", agent->gen, agent->epsilon, agent->genDropoff, agent->discountFactor, agent->alpha);
+        sprintf(temp, "Generation %d\nEpsilon: %f\nGenDropoff %f\nDicount Factor: %f\nAlpha: %f", agent->gen, agent->epsilon, agent->genDropoff, agent->discountFactor, agent->alpha);
     }
     if (mode != State::User)
     {

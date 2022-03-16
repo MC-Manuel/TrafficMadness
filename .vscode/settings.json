@@ -1,11 +1,12 @@
 {
   "files.associations": {
+    "cmath": "cpp",
+    "string": "cpp",
     "algorithm": "cpp",
     "atomic": "cpp",
     "bit": "cpp",
     "cctype": "cpp",
     "clocale": "cpp",
-    "cmath": "cpp",
     "compare": "cpp",
     "concepts": "cpp",
     "cstddef": "cpp",
@@ -35,7 +36,6 @@
     "sstream": "cpp",
     "stdexcept": "cpp",
     "streambuf": "cpp",
-    "string": "cpp",
     "system_error": "cpp",
     "tuple": "cpp",
     "type_traits": "cpp",
